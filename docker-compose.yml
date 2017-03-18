@@ -1,0 +1,38 @@
+version: '2'
+services:
+  jira:
+    image: "jira:latest"
+    restart: always
+    links:
+      - db:db
+    depends_on:
+      - db
+    build:
+      context: ./
+      dockerfile: "./docker/source/jira/Dockerfile"
+    ports:
+      - "${JIRA_PORT}:8080"
+  db:
+    image: "jira-db:latest"
+    restart: always
+    build:
+      context: ./
+      dockerfile: "./docker/source/mariadb/Dockerfile"
+    volumes:
+      - "db_jira:/var/lib/mysql"
+      - "./docker/source/mariadb/db_dump/db_jira:/docker-entrypoint-initdb.d"
+    env_file:
+      - "./docker/env/db.env"
+  adminer:
+    image: "jira-adminer:latest"
+    restart: always
+    links:
+      - db:db
+    build:
+      context: ./
+      dockerfile: "./docker/source/adminer/Dockerfile"
+    ports:
+      - "${ADMINER_PORT}:80"
+volumes:
+  db_jira:
+    external: false
