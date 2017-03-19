@@ -10,6 +10,8 @@ services:
     build:
       context: ./
       dockerfile: "./docker/source/jira/Dockerfile"
+    volumes:
+      - "./docker/source/jira/caches/indexes:/var/atlassian/jira/caches/indexes:rw"
     ports:
       - "${JIRA_PORT}:8080"
   db:
